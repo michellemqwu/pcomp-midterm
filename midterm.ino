@@ -1,3 +1,6 @@
+#include "Servo.h" 
+Servo servoMotor;
+
 const int startButton = 2;
 
 const int player1RedLEDPin = 6;
@@ -15,6 +18,8 @@ const int player1GreenButtonPin = 11;
 const int player2RedButtonPin = 13;
 const int player2YellowButtonPin = 14;
 const int player2GreenButtonPin = 15;
+
+const int servoMotorPin = 16;
 
 int player1RandomPin;
 int player2RandomPin;
@@ -152,6 +157,7 @@ void loop() {
   currentPlayer2LEDButtonState = digitalRead(player2RandomPin - 3);
   if (isPressed(currentStartButtonState, lastStartButtonState)) {
     Serial.println("start button is pressed");
+    servoMotor.write(90);
     lightUpLed();
   } else if (isPressed(currentPlayer1LEDButtonState, lastPlayer1LEDButtonState) && gameCounter < 5){
     Serial.println("player 1 reacted");
@@ -175,9 +181,11 @@ void loop() {
     if (player1ReactionTime > player2ReactionTime) {
       Serial.print("the winner is: winner 2");
       winnerLightEffect(player2RedLEDPin, player2YellowLEDPin, player2GreenLEDPin);
+      servoMotor.write(45);
       } else {
         Serial.print("the winner is: winner 1");
         winnerLightEffect(player1RedLEDPin, player1YellowLEDPin, player1GreenLEDPin);
+        servoMotor.write(135);
         }
     reset();
     gameCounter = 0;
