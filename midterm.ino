@@ -71,14 +71,14 @@ void setup() {
   pinMode(player2GreenLEDPin, OUTPUT);   
 
 // player 1 buttons
-  pinMode(player1RedButtonPin, INPUT);
-  pinMode(player1YellowButtonPin, INPUT);
-  pinMode(player1GreenButtonPin, INPUT);
+  pinMode(player1RedButtonPin, INPUT_PULLDOWN);
+  pinMode(player1YellowButtonPin, INPUT_PULLDOWN);
+  pinMode(player1GreenButtonPin, INPUT_PULLDOWN);
 
 // player 2 buttons
-  pinMode(player2RedButtonPin, INPUT);
-  pinMode(player2YellowButtonPin, INPUT);
-  pinMode(player2GreenButtonPin, INPUT);
+  pinMode(player2RedButtonPin, INPUT_PULLDOWN);
+  pinMode(player2YellowButtonPin, INPUT_PULLDOWN);
+  pinMode(player2GreenButtonPin, INPUT_PULLDOWN);
 }
 
 // Reset everything
@@ -91,12 +91,6 @@ void reset() {
   digitalWrite(player1RandomPin, LOW);
   digitalWrite(player2RandomPin, LOW);
   delay(500);
-}
-
-// State 0: Read a button press
-void readStartButton() {
-  reset();
-  currentStartButtonState = digitalRead(startButton);
 }
 
 // State 1: Ligihtup LED
