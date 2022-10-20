@@ -3,6 +3,10 @@ Servo servoMotor;
 
 const int startButton = 2;
 
+const int countDownLEDPin1 = 3;
+const int countDownLEDPin2 = 4;
+const int countDownLEDPin3 = 5;
+
 const int player1RedLEDPin = 6;
 const int player1YellowLEDPin = 7;
 const int player1GreenLEDPin = 8;
@@ -19,7 +23,7 @@ const int player2RedButtonPin = 13;
 const int player2YellowButtonPin = 14;
 const int player2GreenButtonPin = 15;
 
-const int servoMotorPin = 16;
+const int servoMotorPin = 19;
 
 int player1RandomPin;
 int player2RandomPin;
@@ -53,12 +57,14 @@ void setup() {
   
   Serial.begin(9600);
 
-  pinMode(startButton, INPUT);
+  servoMotor.attach(servoMotorPin);
 
-// countdown LED
-  pinMode(3, OUTPUT);   
-  pinMode(4, OUTPUT);   
-  pinMode(5, OUTPUT); 
+  pinMode(startButton, INPUT_PULLDOWN);
+
+// countdown LED pins
+  pinMode(countDownLEDPin1, OUTPUT);   
+  pinMode(countDownLEDPin2, OUTPUT);   
+  pinMode(countDownLEDPin3, OUTPUT); 
   
 // player 1 reaction LED
   pinMode(player1RedLEDPin, OUTPUT);   
@@ -85,24 +91,24 @@ void setup() {
 void reset() {
   player1Reacted = false;
   player2Reacted = false;
-  digitalWrite(3, LOW);
-  digitalWrite(4, LOW);
-  digitalWrite(5, LOW);
+  digitalWrite(countDownLEDPin1, LOW);
+  digitalWrite(countDownLEDPin2, LOW);
+  digitalWrite(countDownLEDPin3, LOW);
   digitalWrite(player1RandomPin, LOW);
   digitalWrite(player2RandomPin, LOW);
   delay(500);
 }
 
-// State 1: Ligihtup LED
+// Ligihtup LED for a game play
 void lightUpLed() {
     Serial.print("game counter is: ");
     Serial.println(gameCounter);
     delay(500);
-    digitalWrite(3, HIGH);
+    digitalWrite(countDownLEDPin1, HIGH);
     delay(500);
-    digitalWrite(4, HIGH);
+    digitalWrite(countDownLEDPin2, HIGH);
     delay(500);
-    digitalWrite(5, HIGH);
+    digitalWrite(countDownLEDPin3, HIGH);
     delay(500);
     player1RandomPin = random(player1RedLEDPin, player1GreenLEDPin+1);
     player2RandomPin = player1RandomPin + 10;
@@ -112,10 +118,12 @@ void lightUpLed() {
     player2LightOnTime = millis();
 }
 
+// helper function for determine if a button is pressed
 bool isPressed(int current, int prev) {
   return current > prev;
 }
 
+// LED light flashing effect for the winner
 void winnerLightEffect(int redLedPin, int yellowLedPin, int greenLEDPin) {
   for (int i = 0; i < 5; i++) {
     digitalWrite(redLedPin, HIGH);
@@ -174,12 +182,12 @@ void loop() {
   } else if (gameCounter == 5) {
     if (player1ReactionTime > player2ReactionTime) {
       Serial.print("the winner is: winner 2");
+      servoMotor.write(0);
       winnerLightEffect(player2RedLEDPin, player2YellowLEDPin, player2GreenLEDPin);
-      servoMotor.write(45);
       } else {
         Serial.print("the winner is: winner 1");
+        servoMotor.write(180);
         winnerLightEffect(player1RedLEDPin, player1YellowLEDPin, player1GreenLEDPin);
-        servoMotor.write(135);
         }
     reset();
     gameCounter = 0;
