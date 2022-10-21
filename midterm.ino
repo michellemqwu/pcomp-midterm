@@ -101,15 +101,15 @@ void reset() {
 
 // Ligihtup LED for a game play
 void lightUpLed() {
-    Serial.print("game counter is: ");
-    Serial.println(gameCounter);
+    //Serial.print("game counter is: ");
+    //Serial.println(gameCounter);
     delay(500);
     digitalWrite(countDownLEDPin1, HIGH);
     delay(500);
     digitalWrite(countDownLEDPin2, HIGH);
     delay(500);
     digitalWrite(countDownLEDPin3, HIGH);
-    delay(500);
+    delay(random(500, 1500));
     player1RandomPin = random(player1RedLEDPin, player1GreenLEDPin+1);
     player2RandomPin = player1RandomPin + 10;
     digitalWrite(player1RandomPin, HIGH);
@@ -158,21 +158,19 @@ void loop() {
   currentPlayer1LEDButtonState = digitalRead(player1RandomPin + 3);
   currentPlayer2LEDButtonState = digitalRead(player2RandomPin - 3);
   if (isPressed(currentStartButtonState, lastStartButtonState)) {
-    Serial.println("start button is pressed");
+    //Serial.println("start button is pressed");
     servoMotor.write(90);
     lightUpLed();
   } else if (isPressed(currentPlayer1LEDButtonState, lastPlayer1LEDButtonState) && gameCounter < 5){
-    Serial.println("player 1 reacted");
+    //Serial.println("player 1 reacted");
     player1ReactionTime += millis() - player1LightOnTime;
     player1Reacted = true;
     digitalWrite(player1RandomPin, LOW);
-    delay(500);
   } else if (isPressed(currentPlayer2LEDButtonState, lastPlayer2LEDButtonState) && gameCounter < 5){
-    Serial.println("player 2 reacted");
+    //Serial.println("player 2 reacted");
     player2ReactionTime += millis() - player2LightOnTime;
     player2Reacted = true;
     digitalWrite(player2RandomPin, LOW);
-    delay(500);
   } else if (player1Reacted && player2Reacted && gameCounter < 5){
     gameCounter++;
     if (gameCounter < 5) {
@@ -181,13 +179,11 @@ void loop() {
     }   
   } else if (gameCounter == 5) {
     if (player1ReactionTime > player2ReactionTime) {
-      Serial.print("the winner is: winner 2");
       servoMotor.write(0);
-      winnerLightEffect(player2RedLEDPin, player2YellowLEDPin, player2GreenLEDPin);
+      winnerLightEffect(player1RedLEDPin, player1YellowLEDPin, player1GreenLEDPin);
       } else {
-        Serial.print("the winner is: winner 1");
         servoMotor.write(180);
-        winnerLightEffect(player1RedLEDPin, player1YellowLEDPin, player1GreenLEDPin);
+        winnerLightEffect(player2RedLEDPin, player2YellowLEDPin, player2GreenLEDPin);
         }
     reset();
     gameCounter = 0;
