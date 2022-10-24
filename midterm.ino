@@ -25,6 +25,7 @@ const int player2GreenButtonPin = 15;
 
 const int servoMotorPin = 19;
 
+// pin for the randomly lit up LED at each game play
 int player1RandomPin;
 int player2RandomPin;
 
@@ -61,27 +62,22 @@ void setup() {
 
   pinMode(startButton, INPUT_PULLDOWN);
 
-// countdown LED pins
   pinMode(countDownLEDPin1, OUTPUT);   
   pinMode(countDownLEDPin2, OUTPUT);   
   pinMode(countDownLEDPin3, OUTPUT); 
-  
-// player 1 reaction LED
+
   pinMode(player1RedLEDPin, OUTPUT);   
   pinMode(player1YellowLEDPin, OUTPUT);   
   pinMode(player1GreenLEDPin, OUTPUT);   
 
-// player 2 reaction LED
   pinMode(player2RedLEDPin, OUTPUT);   
   pinMode(player2YellowLEDPin, OUTPUT);   
   pinMode(player2GreenLEDPin, OUTPUT);   
 
-// player 1 buttons
   pinMode(player1RedButtonPin, INPUT_PULLDOWN);
   pinMode(player1YellowButtonPin, INPUT_PULLDOWN);
   pinMode(player1GreenButtonPin, INPUT_PULLDOWN);
 
-// player 2 buttons
   pinMode(player2RedButtonPin, INPUT_PULLDOWN);
   pinMode(player2YellowButtonPin, INPUT_PULLDOWN);
   pinMode(player2GreenButtonPin, INPUT_PULLDOWN);
@@ -157,27 +153,33 @@ void loop() {
   currentStartButtonState = digitalRead(startButton);
   currentPlayer1LEDButtonState = digitalRead(player1RandomPin + 3);
   currentPlayer2LEDButtonState = digitalRead(player2RandomPin - 3);
+ 
   if (isPressed(currentStartButtonState, lastStartButtonState)) {
-    //Serial.println("start button is pressed");
+    // when start button is pressed, start game
     servoMotor.write(90);
     lightUpLed();
   } else if (isPressed(currentPlayer1LEDButtonState, lastPlayer1LEDButtonState) && gameCounter < 5){
-    //Serial.println("player 1 reacted");
+    // when player 1 have reacted, take note of their reaction time and turn off their LED
     player1ReactionTime += millis() - player1LightOnTime;
     player1Reacted = true;
     digitalWrite(player1RandomPin, LOW);
   } else if (isPressed(currentPlayer2LEDButtonState, lastPlayer2LEDButtonState) && gameCounter < 5){
-    //Serial.println("player 2 reacted");
+    // when player 2 have reacted, take note of their reaction time and turn off their LED
     player2ReactionTime += millis() - player2LightOnTime;
     player2Reacted = true;
     digitalWrite(player2RandomPin, LOW);
   } else if (player1Reacted && player2Reacted && gameCounter < 5){
+    // when both players have reacted and five rounds have not yet reached, increment game counter
+    // and start the next round
     gameCounter++;
     if (gameCounter < 5) {
+      // since the game counter is incremented after entering the else if, this check is needed
+      // to not have an extra round
       reset();
       lightUpLed();
     }   
   } else if (gameCounter == 5) {
+    // when game reached to 5 rounds, show lighting effects and turn servo to winner
     if (player1ReactionTime > player2ReactionTime) {
       servoMotor.write(0);
       winnerLightEffect(player1RedLEDPin, player1YellowLEDPin, player1GreenLEDPin);
